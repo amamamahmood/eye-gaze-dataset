@@ -264,7 +264,7 @@ def sample_table(df, condition, dicom_folder, sample_size=30):
 if __name__ == '__main__':
 
     # Replace with the dicom folder you downloaded the MIMIC-CXR Database images
-    dicom_folder = '/gpfs/fs0/data/mimic_cxr/images/'
+    dicom_folder = '\physionet.org\files\mimic-cxr\2.0.0'
 
 
     #Create a new folder to store data the eye gaze experiment
