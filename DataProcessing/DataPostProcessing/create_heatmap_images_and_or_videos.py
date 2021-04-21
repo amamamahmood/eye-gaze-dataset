@@ -15,7 +15,7 @@ from skvideo.io import FFmpegWriter
 import glob
 
 #Replace with the location of the MIMIC-CXR images
-original_folder_images='/data/MIMIC/MIMIC-IV/cxr_v2/physionet.org/files/mimic-cxr/2.0.0'
+original_folder_images='D:/github/eye-gaze-dataset/physionet.org/files/mimic-cxr/2.0.0/'
 
 
 def create_videos(input_folder, eye_gaze_table, cases_table, data_type):
@@ -232,6 +232,28 @@ def process_eye_gaze_table(session_table, export_folder, cases, window=0, calibr
                 except:
                     pass
                 plt.imsave(os.path.join(export_folder, previous_image_name,'heatmap.png'), heatmap)
+                ### trying to save heatmap over image
+                try:
+                    #Load dicom image
+                    case_index2 = cases.loc[cases['dicom_id'] == previous_image_name].index[0]
+                    file_path2 = cases.iloc[case_index2]['path']
+                    ds = pydicom.dcmread(os.path.join(original_folder_images,file_path2))
+                    image = ds.pixel_array.copy().astype(np.float)
+                    image /= np.max(image)
+                    image *= 255.
+                    image = image.astype(np.uint8)
+                    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+                except:
+                    #else it is a calibration image
+                    print('not found')
+                    image = cv2.imread('calibration_image.png').astype('uint8')
+                plt.imsave(os.path.join(export_folder, previous_image_name,'image.png'), image)
+                image1 = cv2.imread(os.path.join(export_folder, previous_image_name,'image.png'))
+                image2 = cv2.imread(os.path.join(export_folder, previous_image_name,'heatmap.png'))
+                overlay_heatmap = cv2.addWeighted(image1.astype('uint8'), 0.5, image2.astype('uint8'), 0.5, 0.0)
+                plt.imsave(os.path.join(export_folder, previous_image_name,'heatmap_overlay.png'), overlay_heatmap)
+                ########
+                
                 heatmaps = []
                 del(current_heatmap)
 
@@ -355,7 +377,8 @@ def process_raw_eye_gaze(experiment_name, video=False):
 
     cases = pd.read_csv('../../physionet.org/files/egd-cxr/1.0.0/master_sheet.csv')
     table = pd.read_csv('../../physionet.org/files/egd-cxr/1.0.0/fixations.csv')
-
+   # cases = cases.loc[cases['dicom_id'] == '1a3f39ce-ebe90275-9a66145a-af03360e-ee3b163b']
+    #table = table.loc[table['dicom_id'] == '1a3f39ce-ebe90275-9a66145a-af03360e-ee3b163b']
 
     sessions = table.groupby(['SESSION_ID'])
 
@@ -383,7 +406,7 @@ def process_raw_eye_gaze(experiment_name, video=False):
 if __name__ == '__main__':
 
     #FOR fixations.csv: To generate heatmap images and create videos of the heatmaps, uncomment the following line
-    process_fixations(experiment_name='fixation_heatmaps')
+    process_fixations(experiment_name='fixation_heatmaps_test2', video=True)
 
     #The following method is required only if you want to work with the raw eye gaze data (as they come from the machine unprocessed). Please read paper for the differences.
     # process_raw_eye_gaze(experiment_name='eye_gaze_heatmaps')
