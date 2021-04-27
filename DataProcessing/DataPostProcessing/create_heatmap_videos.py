@@ -105,6 +105,7 @@ def create_videos(input_folder, eye_gaze_table, cases, data_type):
             out.write(overlay_heatmap)
         out.release()
         #vid_out.close()
+        
 
 def calibrate(eye_gaze_table,screen_width=1920, screen_height=1080):
     '''
@@ -361,32 +362,7 @@ def process_fixations(experiment_name, video=False):
     print(table)
     sessions = table.groupby(['MEDIA_ID'])
     
-    #m = cases.dicom_id.isin(table.DICOM_ID)
-    #print('mmm')
-    #print(m)
-    #cases = cases[m]
-    #print(cases)
-    #sessions = table.groupby(['SESSION_ID'])
-    print('length of sessions')
-    print(len(sessions))
-    try:
-        os.makedirs(experiment_name, exist_ok=True)
-    except OSError as exc:
-        print(exc, ' Proceeding...')
-        pass
-
-    p = multiprocessing.Pool(processes=len(sessions))
-    objects = []
-    for session in sessions:
-        df = session[1].copy().reset_index(drop=True)
-        objects.append((df, experiment_name, cases))
-    eye_gaze_session_tables = p.starmap(process_eye_gaze_table, [i for i in objects])
-    p.close()
-
-    final_table = concatenate_session_tables(eye_gaze_session_tables)
-
-    #Save experiment consolidated table
-    final_table.to_csv(experiment_name+'.csv', index=False)
+    final_table = pd.read_csv(experiment_name+'.csv')
     #Create video files with fixation heatmaps
     if video==True:
         create_videos(experiment_name,final_table, cases, data_type='fixations')
