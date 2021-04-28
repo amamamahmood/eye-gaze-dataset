@@ -362,7 +362,7 @@ def process_fixations(experiment_name, video=False):
     table = pd.read_csv('../../physionet.org/files/egd-cxr/1.0.0/fixations.csv')
     #table = table.loc[table['SESSION_ID']==1]
     #table = table.loc[table['MEDIA_ID'] >=12]
-    table = table.loc[table['SESSION_ID'].between(1,5)]
+    table = table.loc[table['SESSION_ID'].between(28,38)]
     #table.drop('SESSION_ID', inplace=True, axis=1)
     print(table)
     sessions = table.groupby(['SESSION_ID'])
@@ -438,7 +438,7 @@ def process_raw_eye_gaze(experiment_name, video=False):
 if __name__ == '__main__':
 
     #FOR fixations.csv: To generate heatmap images and create videos of the heatmaps, uncomment the following line
-    process_fixations(experiment_name='fixation_heatmaps_session_1-5', video=False)
+    process_fixations(experiment_name='fixation_heatmaps_session_28-38', video=False)
 
     #The following method is required only if you want to work with the raw eye gaze data (as they come from the machine unprocessed). Please read paper for the differences.
     # process_raw_eye_gaze(experiment_name='eye_gaze_heatmaps')
