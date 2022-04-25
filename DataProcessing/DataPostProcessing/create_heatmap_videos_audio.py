@@ -82,7 +82,8 @@ def create_videos(input_folder, eye_gaze_table, cases, data_type):
             os.mkdir(os.path.join(input_folder,image_name))
         except:
             pass
-        image = cv2.imread("image.png")
+        #print(os.path.join(input_folder,subfolder))
+        image = cv2.imread(os.path.join(subfolder,"image.png"))
 
         
 
